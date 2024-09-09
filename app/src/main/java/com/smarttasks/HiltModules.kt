@@ -1,7 +1,6 @@
 package com.smarttasks
 
 import com.smarttasks.data.mappers.TaskData
-import com.smarttasks.domain.entities.Task
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
