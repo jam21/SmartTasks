@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.smarttasks.data.mappers.TaskData
 import com.smarttasks.domain.entities.Task
 import com.smarttasks.ui.tasks.TaskItem
+import com.smarttasks.ui.tasks.TaskList
 import com.smarttasks.ui.theme.SmartTasksTheme
 import com.smarttasks.ui.theme.smallPadding
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
             SmartTasksTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding).smallPadding()) {
-                        TaskItem(Modifier.padding(4.dp), task = Task("id", Date(),Date(),"AOA Muhammad Younas","",0))
+                        TaskList(tasks = listOf(Task("id", Date(), Date(), "Title", "Description", 0),Task("id1", Date(), Date(), "Title", "Description", 0),Task("id2", Date(), Date(), "Title", "Description", 0)))
                     }
                 }
             }

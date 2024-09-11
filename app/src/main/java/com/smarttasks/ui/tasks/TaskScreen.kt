@@ -2,7 +2,10 @@ package com.smarttasks.ui.tasks
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -22,7 +25,7 @@ import com.smarttasks.utils.toMMMDdYyyy
 import java.util.Date
 
 @Composable
-fun TaskItem(modifier: Modifier = Modifier, onClick: (() -> Unit) = {}, task: Task) =
+fun TaskItem(modifier: Modifier = Modifier, task: Task, onClick: (() -> Unit) = {}) =
     Card(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
@@ -73,8 +76,24 @@ fun TaskItem(modifier: Modifier = Modifier, onClick: (() -> Unit) = {}, task: Ta
         }
     }
 
+@Composable
+fun TaskList(modifier: Modifier = Modifier, tasks: List<Task>) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+        items(tasks, key = { item -> item.id }) {item->
+            HorizontalMediumSpace(Modifier.fillMaxWidth())
+            TaskItem(modifier = modifier, task=item)
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun TaskItemPreview() {
     TaskItem(onClick = {}, task = Task("id", Date(), Date(), "Title", "Description", 0))
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TaskListPreview() {
+    TaskList(tasks = listOf(Task("id", Date(), Date(), "Title", "Description", 0)))
 }
