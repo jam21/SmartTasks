@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SmartTasks</string>
+    <string name="due_date">Due date</string>
+    <string name="days_left">Days left</string>
 </resources>

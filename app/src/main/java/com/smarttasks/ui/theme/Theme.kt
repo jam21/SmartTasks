@@ -3,13 +3,16 @@ package com.smarttasks.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 
 private val DarkColorScheme = darkColorScheme(
     primary = yellow,
@@ -17,7 +20,8 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = offWhite,
     background = yellow,
     surfaceContainerHighest = white,
-    onSurface = red
+    onSurface = red,
+    onSecondary = darkGrey
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -26,7 +30,8 @@ private val LightColorScheme = lightColorScheme(
     tertiary = offWhite,
     background = yellow,
     surfaceContainerHighest = white,
-    onSurface = red
+    onSurface = red,
+    onSecondary = darkGrey
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -58,6 +63,7 @@ fun SmartTasksTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
+        shapes = Shapes().copy(extraSmall = RoundedCornerShape(5.0.dp))
     )
 }
