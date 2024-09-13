@@ -41,6 +41,7 @@ import com.smarttasks.ui.theme.extraLargeWidth
 import com.smarttasks.ui.theme.mediumPadding
 import com.smarttasks.ui.theme.mediumSize
 import com.smarttasks.utils.daysLeft
+import com.smarttasks.utils.isToday
 import com.smarttasks.utils.toMMMDdYyyy
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -111,16 +112,20 @@ fun TaskList(modifier: Modifier = Modifier, tasks: List<Task>) {
 fun TaskScreen(modifier: Modifier = Modifier, response: State<Response<List<Task>>>) {
     when (response.value) {
         is Response.ERROR -> Text(text = "Error: ${(response.value as Response.ERROR).message}")
-        Response.LOADING -> Box(modifier, Alignment.Center){ CircularProgressIndicator(
-            modifier = Modifier.extraLargeWidth(),
-            color = MaterialTheme.colorScheme.secondary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        )}
+        Response.LOADING -> Box(modifier, Alignment.Center) {
+            CircularProgressIndicator(
+                modifier = Modifier.extraLargeWidth(),
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
+        }
 
         is Response.SUCCESS -> TaskViewpager(
             modifier.fillMaxWidth(),
-            (response.value as Response.SUCCESS<List<Task>>).data.sortedBy { it.targetDate }
-                .groupBy { it.targetDate })
+            (response.value as Response.SUCCESS<List<Task>>).data.sortedWith(
+                compareBy<Task> { it.targetDate } // Sort by date first
+                    .thenByDescending { it.priority } // Then sort by priority in descending order
+            ).groupBy { it.targetDate })
     }
 }
 
@@ -134,8 +139,13 @@ fun TaskViewpager(modifier: Modifier = Modifier, data: Map<Date, List<Task>>) {
     })
     val coroutineScope = rememberCoroutineScope()
     var currentDat by remember { mutableStateOf(data.keys.toList()[0]) }
+    val currentTitle by remember(currentDat) {
+
+        mutableStateOf(if (currentDat.isToday()) "Today" else currentDat.toMMMDdYyyy() ?: "")
+    }
+
     HorizontalMediumSpace(Modifier.fillMaxWidth())
-    TitleText(currentDat, moveNext = {
+    TitleText(currentTitle, moveNext = {
         coroutineScope.launch {
             if (pagerState.currentPage == size - 1) return@launch
             pagerState.animateScrollToPage(pagerState.currentPage + 1)
@@ -150,8 +160,8 @@ fun TaskViewpager(modifier: Modifier = Modifier, data: Map<Date, List<Task>>) {
 
     HorizontalMediumSpace(Modifier.fillMaxWidth())
 
-    HorizontalPager(pagerState, modifier = modifier, key = {it}) { page ->
-        if (pagerState.currentPageOffsetFraction==0f){
+    HorizontalPager(pagerState, modifier = modifier, key = { it }) { page ->
+        if (pagerState.currentPageOffsetFraction == 0f) {
             currentDat = data.keys.toList()[page]
         }
 
@@ -164,7 +174,7 @@ fun TaskViewpager(modifier: Modifier = Modifier, data: Map<Date, List<Task>>) {
 }
 
 @Composable
-private fun TitleText(currentDat: Date, moveNext:()->Unit = {}, movePrevious:()->Unit = {}) {
+private fun TitleText(title: String, moveNext: () -> Unit = {}, movePrevious: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -174,20 +184,24 @@ private fun TitleText(currentDat: Date, moveNext:()->Unit = {}, movePrevious:()-
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = null,
-            modifier = Modifier.size(mediumSize()).clickable {
-                movePrevious()
-            },
+            modifier = Modifier
+                .size(mediumSize())
+                .clickable {
+                    movePrevious()
+                },
         )
         Text(
-            text = currentDat.toMMMDdYyyy() ?: "",
+            text = title,
             style = MaterialTheme.typography.titleLarge
         )
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            modifier = Modifier.size(mediumSize()).clickable {
-                moveNext()
-            }
+            modifier = Modifier
+                .size(mediumSize())
+                .clickable {
+                    moveNext()
+                }
         )
     }
 }
