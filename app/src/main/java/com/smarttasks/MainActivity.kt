@@ -9,31 +9,35 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.smarttasks.data.mappers.TaskData
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.smarttasks.domain.entities.Task
 import com.smarttasks.ui.tasks.TaskItem
-import com.smarttasks.ui.tasks.TaskList
+import com.smarttasks.ui.tasks.TaskScreen
+import com.smarttasks.ui.tasks.TaskViewModel
 import com.smarttasks.ui.theme.SmartTasksTheme
 import com.smarttasks.ui.theme.smallPadding
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Date
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var myTaskData: TaskData
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             SmartTasksTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding).smallPadding()) {
-                        TaskList(tasks = listOf(Task("id", Date(), Date(), "Title", "Description", 0),Task("id1", Date(), Date(), "Title", "Description", 0),Task("id2", Date(), Date(), "Title", "Description", 0)))
+                    Column(modifier = Modifier.fillMaxSize().padding(innerPadding).smallPadding()) {
+                        val viewModel:TaskViewModel = hiltViewModel()
+                        LaunchedEffect(Unit){
+                            viewModel.getTasks()
+                        }
+                        TaskScreen(modifier = Modifier.fillMaxSize(),response = viewModel.data.collectAsState())
                     }
                 }
             }
